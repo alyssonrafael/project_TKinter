@@ -25,11 +25,9 @@ O objetivo deste projeto é familiarizar-se com a biblioteca Tkinter para criaç
 
 ## Como Usar
 
-[Inserir instruções de uso aqui]
-
-1. Clone este repositório.
-2. Instale as dependências com `pip install -r requirements.txt`.
-3. Execute o programa com `python main.py`.
+1. Clone este repositório.(https://github.com/alyssonrafael/project_TKinter)
+2. Se necessário, faça as configurações básicas do Python 3 na sua IDE ou na sua máquina.
+3. Execute o programa com `GUI.py`.
 
  
 ## Licença
