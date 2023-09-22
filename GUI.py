@@ -1,7 +1,9 @@
+# Importando os módulos necessários
 from tkinter import *
 from tkinter import ttk
 import sqlite3
 
+# Importando funcionalidades específicas do ReportLab
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.pdfbase import pdfmetrics
@@ -10,19 +12,26 @@ from reportlab.platypus import SimpleDocTemplate, Image
 import webbrowser 
 
 
+# Criando uma janela tkinter
 janela = Tk()
 
+# Definindo uma classe chamada Relatorios
 class Relatorios():
+     # Método para abrir o arquivo PDF no navegador
     def print_cliente(self):
         webbrowser.open("cliente.pdf") 
+     # Método para gerar um relatório de cliente
     def gerarRelatorioCliente(self):
+    # Criando um objeto de canvas para desenhar no PDF
         self.c = canvas.Canvas("cliente.pdf")
 
+        # Obtendo os dados dos campos de entrada
         self.codigoRel = self.codigo_entry.get()
         self.nomeRel = self.nome_entry.get()
         self.telefoneRel = self.telefone_entry.get()
         self.cidadeRel = self.cidade_entry.get()
 
+        # Adicionando texto e dados ao PDF
         self.c.setFont("Helvetica-Bold", 24)
         self.c.drawString(200, 790, 'ficha do cliente')
 
@@ -40,22 +49,31 @@ class Relatorios():
 
         self.c.rect(20, 550, 550, 5, fill=TRUE, stroke=False)
 
+          # Salvando o PDF
         self.c.showPage()
         self.c.save()
+         # Chamando o método para abrir o PDF no navegador
         self.print_cliente()
 
 class funcs():
-    def limpa_tela(self):
 
+    # Este método limpa os campos de entrada na interface gráfica.
+    def limpa_tela(self):
         self.codigo_entry.delete(0,END)
         self.nome_entry.delete(0,END)
         self.cidade_entry.delete(0,END)
         self.telefone_entry.delete(0,END)
+
+     # Este método estabelece a conexão com o banco de dados SQLite.
     def conecta_db(self):
         self.conn = sqlite3.connect("clientes.db")
         self.cursor = self.conn.cursor();print("banco de dados criado")
+
+    # Este método fecha a conexão com o banco de dados.
     def desconecta_db(self):
         self.conn.close();print("desconectado")
+
+     # Este método cria uma tabela 'clientes' no banco de dados, se ela não existir.
     def monta_tabela(self):
         self.conecta_db();print("conenctando ao banco de dados")
         ##criar tabela
@@ -69,16 +87,19 @@ class funcs():
         """)
         self.conn.commit()
         self.desconecta_db()
+
+         # Este método adiciona um novo cliente ao banco de dados.
     def add_cliente(self):
         self.variaveis()
         self.conecta_db()
-
         self.cursor.execute("""INSERT INTO clientes (nome_cliente,telefone,cidade)
             VALUES(?, ?, ?) """, (self.nome, self.telefone, self.cidade))
         self.conn.commit()
         self.desconecta_db()
         self.select_lista()
         self.limpa_tela()
+
+         # Este método exibe a lista de clientes na interface gráfica.
     def select_lista(self):
         self.listaCLI.delete(*self.listaCLI.get_children())
         self.conecta_db()
@@ -87,6 +108,9 @@ class funcs():
         for i in lista:
             self.listaCLI.insert("", END, values=i)
         self.desconecta_db()
+
+        # Este método é chamado quando um item da lista é clicado duas vezes.
+        # Ele preenche os campos de entrada com os detalhes do cliente selecionado.
     def onDoubleClick(self, event):
         self.limpa_tela()
         self.listaCLI.selection()
@@ -97,6 +121,8 @@ class funcs():
             self.nome_entry.insert(END,col2)
             self.telefone_entry.insert(END,col3)
             self.cidade_entry.insert(END,col4)
+
+         # Este método deleta um cliente do banco de dados
     def deleta_cliente(self):
         self.variaveis()
         self.conecta_db()
@@ -105,11 +131,15 @@ class funcs():
         self.desconecta_db()
         self.limpa_tela()
         self.select_lista()
+
+        # Este método obtém os valores dos campos de entrada.
     def variaveis(self):   
         self.codigo= self.codigo_entry.get()
         self.nome = self.nome_entry.get() 
         self.telefone = self.telefone_entry.get() 
         self.cidade = self.cidade_entry.get()     
+
+        # Este método altera os detalhes de um cliente no banco de dados.
     def  alterear_cliente(self):
         self.variaveis()
         self.conecta_db()
@@ -118,6 +148,8 @@ class funcs():
         self.desconecta_db()
         self.select_lista()
         self.limpa_tela()
+
+        # Este método busca clientes com base no nome fornecido. 
     def busca_clientes(self):
         self.conecta_db()
 
@@ -136,23 +168,32 @@ class funcs():
 
 class Aplicação(funcs, Relatorios): #criando a class aplicaçao
     def __init__(self): #criando a funçao principal
-        self.janela = janela #colocando a janela pra rodar na funçao principal
-        self.tela() #colocando a funçao tela aqui na principal 
-        self.frames_da_tela()#frames
+         # Configurações da janela principal
+        self.janela = janela
+        self.tela()
+        self.frames_da_tela()
         self.widgets_frame_1()
         self.lista_frame_2()
         self.monta_tabela()
         self.select_lista()
         self.menus()
         janela.mainloop() #deixa a janela em loop quando abrir 
+
     def tela(self):
+        # Configuração da janela
+        # ... (definição do título, cor, tamanho, etc.)
+
         self.janela.title("cadastro de clientes") #aplica o titulo da janela 
         self.janela.configure(background= '#8667f4') #dar a cor ao fundo da janela 
         self.janela.geometry("700x500") #define o tamanho da janela por padrao
         #self.janela.resizable(False,False) # nao deixando a tela aumentar de tamanho se for false ela perde a "responsividade"
         self.janela.maxsize(width= 900, height=700) #definindo tamanho maximo da tela
         self.janela.minsize(width= 400, height=300) #tamanho minimo
+
     def frames_da_tela(self):
+        # Criação dos frames
+        # ... (definição dos frames 1 e 2, posição, cor, etc.)
+
         self.frame_1 = Frame(self.janela, bd=4 , bg ='#8692f4',
                             highlightbackground= '#5952ed',highlightthickness=2 ) #definindo espaços na janela sao os frames o bd e bg sao do frame cor e borda 
         self.frame_1.place(relx=0.02 , rely=0.02, relwidth= 0.96, relheight=0.46) #colocando o frame em posiçao o relx/y faz com que o frame se ajuste conforme for mechendo
@@ -160,7 +201,11 @@ class Aplicação(funcs, Relatorios): #criando a class aplicaçao
         self.frame_2 = Frame(self.janela, bd=4 , bg ='#8692f4',
                             highlightbackground= '#5952ed',highlightthickness=2 ) #definindo espaços na janela sao os frames o bd e bg sao do frame cor e borda 
         self.frame_2.place(relx=0.02 , rely=0.5, relwidth= 0.96, relheight=0.46)
-    def widgets_frame_1(self):# criaçao de botoes 
+
+
+    def widgets_frame_1(self):
+        # Criação dos widgets no frame 1
+        # ... (criação de botões, labels e entradas)
 
         ##criaçao do botao limpar 
         self.bt_limpar = Button(self.frame_1, text="Limpar",bd=2,bg='#cff4f8',fg='black',font=('verdana', 8 ,'bold'),command=self.limpa_tela)
@@ -205,7 +250,12 @@ class Aplicação(funcs, Relatorios): #criando a class aplicaçao
          #criando a entrada dessa label
         self.cidade_entry = Entry(self.frame_1)
         self.cidade_entry.place(relx=0.05,rely=0.85, relwidth=0.8)
+
+
     def lista_frame_2(self): 
+        # Criação da lista no frame 2 parte dos dados
+        # ... (configuração da Treeview, Scrollbar, etc.)
+
         self.listaCLI = ttk.Treeview(self.frame_2, height=3, column=("col1","col2","col3","col4"))
         self.listaCLI.heading('#0',text = "")
         self.listaCLI.heading('#1',text = "codigo")
@@ -226,7 +276,11 @@ class Aplicação(funcs, Relatorios): #criando a class aplicaçao
         self.scroolLista.place(relx=0.96, rely=0.1, relwidth=0.04, relheight=0.85)
 
         self.listaCLI.bind("<Double-1>",self.onDoubleClick)
+        
+
     def menus(self):
+        # Configuração dos menus
+        # ... (criação dos menus, opções e comandos associados)
         menubar = Menu(self.janela)
         self.janela.config(menu=menubar)
         filemenu = Menu(menubar)
